@@ -125,6 +125,6 @@ protected:
   virtual void onWrite(BLECharacteristic *me) override;
 };
 
-extern BleCombo bleCombo;
+extern BleCombo bleDevice;
 #endif // CONFIG_BT_ENABLED
 #endif // ESP32_BLE_KEYBOARD_H

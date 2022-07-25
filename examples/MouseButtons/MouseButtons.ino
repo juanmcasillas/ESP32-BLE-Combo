@@ -3,42 +3,42 @@
  */
 #include <BleCombo.h>
 
-BleCombo bleCombo;
+BleCombo bleDevice;
 
 void setup() {
   Serial.begin(115200);
   Serial.println("Starting BLE work!");
-  bleCombo.begin();
+  bleDevice.begin();
 }
 
 void loop() {
-  if(bleCombo.isConnected()) {
+  if(bleDevice.isConnected()) {
     Serial.println("Left click");
-    bleCombo.click(MOUSE_LEFT);
+    bleDevice.click(MOUSE_LEFT);
     delay(500);
 
     Serial.println("Right click");
-    bleCombo.click(MOUSE_RIGHT);
+    bleDevice.click(MOUSE_RIGHT);
     delay(500);
 
     Serial.println("Scroll wheel click");
-    bleCombo.click(MOUSE_MIDDLE);
+    bleDevice.click(MOUSE_MIDDLE);
     delay(500);
 
     Serial.println("Back button click");
-    bleCombo.click(MOUSE_BACK);
+    bleDevice.click(MOUSE_BACK);
     delay(500);
 
     Serial.println("Forward button click");
-    bleCombo.click(MOUSE_FORWARD);
+    bleDevice.click(MOUSE_FORWARD);
     delay(500);
 
     Serial.println("Click left+right mouse button at the same time");
-    bleCombo.click(MOUSE_LEFT | MOUSE_RIGHT);
+    bleDevice.click(MOUSE_LEFT | MOUSE_RIGHT);
     delay(500);
 
     Serial.println("Click left+right mouse button and scroll wheel at the same time");
-    bleCombo.click(MOUSE_LEFT | MOUSE_RIGHT | MOUSE_MIDDLE);
+    bleDevice.click(MOUSE_LEFT | MOUSE_RIGHT | MOUSE_MIDDLE);
     delay(500);
 
   }

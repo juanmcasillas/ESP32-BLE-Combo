@@ -134,7 +134,7 @@ static const uint8_t _hidReportDescriptor[] = {
 	END_COLLECTION(0)		  // END_COLLECTION
 };
 
-BleCombo bleCombo;
+BleCombo bleDevice;
 bool BleCombo::isInitialized = false;
 
 BleCombo::BleCombo(std::string deviceName, std::string deviceManufacturer, uint8_t batteryLevel)

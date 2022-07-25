@@ -3,28 +3,28 @@
  */
 #include <BleCombo.h>
 
-BleCombo bleCombo;
+BleCombo bleDevice;
 
 void setup() {
   Serial.begin(115200);
   Serial.println("Starting BLE work!");
-  bleCombo.begin();
+  bleDevice.begin();
 }
 
 void loop() {
-  if(bleCombo.isConnected()) {
+  if(bleDevice.isConnected()) {
     Serial.println("Sending 'Hello world'...");
-    bleCombo.print("Hello world");
+    bleDevice.print("Hello world");
 
     delay(1000);
 
     Serial.println("Sending Enter key...");
-    bleCombo.write(KEY_RETURN);
+    bleDevice.write(KEY_RETURN);
 
     delay(1000);
 
     Serial.println("Sending Play/Pause media key...");
-    bleCombo.write(KEY_MEDIA_PLAY_PAUSE);
+    bleDevice.write(KEY_MEDIA_PLAY_PAUSE);
 
     delay(1000);
 
