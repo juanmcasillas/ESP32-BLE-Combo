@@ -8,18 +8,19 @@
 #include "NimBLECharacteristic.h"
 #include "NimBLEHIDDevice.h"
 
-#define BLEDevice                  NimBLEDevice
-#define BLEServerCallbacks         NimBLEServerCallbacks
+#define BLEDevice NimBLEDevice
+#define BLEServerCallbacks NimBLEServerCallbacks
 #define BLECharacteristicCallbacks NimBLECharacteristicCallbacks
-#define BLEHIDDevice               NimBLEHIDDevice
-#define BLECharacteristic          NimBLECharacteristic
-#define BLEAdvertising             NimBLEAdvertising
-#define BLEServer                  NimBLEServer
+#define BLEHIDDevice NimBLEHIDDevice
+#define BLECharacteristic NimBLECharacteristic
+#define BLEAdvertising NimBLEAdvertising
+#define BLEServer NimBLEServer
 
 #else
 
 #include "BLEHIDDevice.h"
 #include "BLECharacteristic.h"
+#include "Print.h"
 
 #endif // USE_NIMBLE
 
@@ -47,8 +48,6 @@ const MediaKeyReport KEY_MEDIA_WWW_BACK = {0, 32};
 const MediaKeyReport KEY_MEDIA_CONSUMER_CONTROL_CONFIGURATION = {0, 64}; // Media Selection
 const MediaKeyReport KEY_MEDIA_EMAIL_READER = {0, 128};
 
-typedef uint16_t MouseButton;
-
 //  Low level key report: up to 6 keys and shift, ctrl etc at once
 typedef struct
 {
@@ -57,65 +56,73 @@ typedef struct
   uint8_t keys[6];
 } KeyReport;
 
-class BleCombo : public BLEServerCallbacks, public BLECharacteristicCallbacks
+class Mouse_;
+class Keyboard_;
+
+class BleCombo : public Print, public BLEServerCallbacks, public BLECharacteristicCallbacks
 {
+  friend class Mouse_;
+  friend class Keyboard_;
+
 private:
   uint8_t _buttons;
-  BLEHIDDevice* hid;
-  BLECharacteristic* inputKeyboard;
-  BLECharacteristic* outputKeyboard;
-  BLECharacteristic* inputMediaKeys;
-  BLECharacteristic* inputMouse;
-  BLECharacteristic* outputMouse;
-  BLEAdvertising*    advertising;
-  KeyReport          _keyReport;
-  MediaKeyReport     _mediaKeyReport;
-  std::string        deviceName;
-  std::string        deviceManufacturer;
-  uint8_t            batteryLevel;
-  bool               connected = false;
-  uint32_t           _delay_ms = 7;
+  BLEHIDDevice *hid;
+  BLECharacteristic *inputKeyboard;
+  BLECharacteristic *outputKeyboard;
+  BLECharacteristic *inputMediaKeys;
+  BLECharacteristic *inputMouse;
+  BLECharacteristic *outputMouse;
+  BLEAdvertising *advertising;
+  KeyReport _keyReport;
+  MediaKeyReport _mediaKeyReport;
+  std::string deviceName;
+  std::string deviceManufacturer;
+  uint8_t batteryLevel;
+  bool connected = false;
+  uint32_t _delay_ms = 7;
   void delay_ms(uint64_t ms);
-  void buttons(const MouseButton b);
+  void buttons(const uint16_t b);
 
-  uint16_t vid       = 0x05ac;
-  uint16_t pid       = 0x820a;
-  uint16_t version   = 0x0210;
+  uint16_t vid = 0x05ac;
+  uint16_t pid = 0x820a;
+  uint16_t version = 0x0210;
 
   static bool isInitialized;
+
 public:
   BleCombo(std::string deviceName = "ESP32 Combo HID", std::string deviceManufacturer = "Espressif", uint8_t batteryLevel = 100);
+  void setBatteryLevel(uint8_t level);
+  void setName(std::string deviceName);
+  void setDelay(uint32_t ms);
+  bool isConnected(void);
+
+protected:
   void begin(void);
   void end(void);
-  void sendReport(KeyReport* keys);
-  void sendReport(MediaKeyReport* keys);
+  void sendReport(KeyReport *keys);
+  void sendReport(MediaKeyReport *keys);
   size_t press(uint8_t k);
   size_t press(const MediaKeyReport k);
-  size_t pressMouse(const MouseButton b);
+  size_t pressMouse(const uint16_t b);
   size_t release(uint8_t k);
   size_t release(const MediaKeyReport k);
-  size_t releaseMouse(const MouseButton b);
+  size_t releaseMouse(const uint16_t b);
   size_t write(uint8_t c);
   size_t write(const MediaKeyReport c);
   size_t write(const uint8_t *buffer, size_t size);
   void releaseAll(void);
-  bool isConnected(void);
-  void setBatteryLevel(uint8_t level);
-  void setName(std::string deviceName);  
-  void setDelay(uint32_t ms);
-  void click(const MouseButton b);
+
+  void click(const uint16_t b);
   void move(signed char x, signed char y, signed char wheel = 0, signed char hWheel = 0);
-  bool isPressed(const MouseButton b );
+  bool isPressed(const uint16_t b);
 
   void set_vendor_id(uint16_t vid);
   void set_product_id(uint16_t pid);
   void set_version(uint16_t version);
-protected:
-  virtual void onStarted(BLEServer *pServer) { };
-  virtual void onConnect(BLEServer* pServer) override;
-  virtual void onDisconnect(BLEServer* pServer) override;
-  virtual void onWrite(BLECharacteristic* me) override;
-
+  virtual void onStarted(BLEServer *pServer){};
+  virtual void onConnect(BLEServer *pServer) override;
+  virtual void onDisconnect(BLEServer *pServer) override;
+  virtual void onWrite(BLECharacteristic *me) override;
 };
 
 extern BleCombo bleCombo;

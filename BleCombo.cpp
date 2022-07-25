@@ -425,6 +425,7 @@ size_t BleCombo::press(uint8_t k)
 		k = pgm_read_byte(_asciimap + k);
 		if (!k)
 		{
+			setWriteError();
 			return 0;
 		}
 		if (k & 0x80)
@@ -450,7 +451,8 @@ size_t BleCombo::press(uint8_t k)
 			}
 		}
 		if (i == 6)
-		{
+		{	
+			setWriteError();
 			return 0;
 		}
 	}
@@ -471,7 +473,7 @@ size_t BleCombo::press(const MediaKeyReport k)
 	return 1;
 }
 
-size_t BleCombo::pressMouse(const MouseButton b)
+size_t BleCombo::pressMouse(const uint16_t b)
 {
 	buttons(_buttons | b);
 	return 1;
@@ -532,7 +534,7 @@ size_t BleCombo::release(const MediaKeyReport k)
 	return 1;
 }
 
-size_t BleCombo::releaseMouse(const MouseButton b)
+size_t BleCombo::releaseMouse(const uint16_t b)
 {
 	buttons(_buttons & ~b);
 	return 1;
@@ -589,7 +591,7 @@ size_t BleCombo::write(const uint8_t *buffer, size_t size)
 	return n;
 }
 
-void BleCombo::click(const MouseButton b)
+void BleCombo::click(const uint16_t b)
 {
 	buttons(_buttons | b);
 	buttons(_buttons & ~b);
@@ -614,7 +616,7 @@ void BleCombo::move(signed char x, signed char y, signed char wheel, signed char
 	}
 }
 
-void BleCombo::buttons(const MouseButton b)
+void BleCombo::buttons(const uint16_t b)
 {
 	if (b != _buttons)
 	{
@@ -623,7 +625,7 @@ void BleCombo::buttons(const MouseButton b)
 	}
 }
 
-bool BleCombo::isPressed(const MouseButton b)
+bool BleCombo::isPressed(const uint16_t b)
 {
 	if ((b & _buttons) > 0)
 		return true;

@@ -5,6 +5,8 @@
 #######################################
 
 BleCombo	KEYWORD1
+Keyboard_   KEYWORD1
+Mouse_  KEYWORD1
 
 #######################################
 # Methods and Functions
