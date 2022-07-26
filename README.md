@@ -1,25 +1,15 @@
 # ESP32 BLE Keyboard & Mouse Combo library
 
-This library allows you to make the ESP32 act as a Bluetooth Keyboard & Mouse Combo and control what it does.  
-You might also be interested in:
-- [ESP32-BLE-Keyboard](https://github.com/T-vK/ESP32-BLE-Keyboard)
-- [ESP32-BLE-Mouse](https://github.com/T-vK/ESP32-BLE-Mouse)
-- [ESP32-BLE-Gamepad](https://github.com/lemmingDev/ESP32-BLE-Gamepad)
+This is a fork of the original [ESP32 BLE HID Combo library](https://github.com/peter-pakanun/ESP32-BLE-Combo)
+which is based on the [BLE-Keyboard](https://github.com/T-vK/ESP32-BLE-Keyboard).
 
+This library is a wrapper of the above fork in order to make it compatible with the [Keyboard](https://www.arduino.cc/reference/en/language/functions/usb/keyboard/) and [Mouse](https://www.arduino.cc/reference/en/language/functions/usb/mouse/).
 
 ## Features
 
- - [x] Send key strokes
- - [x] Send text
- - [x] Press/release individual keys
- - [x] Media keys are supported
- - [ ] Read Numlock/Capslock/Scrolllock state
- - [x] Set battery level (basically works, but doesn't show up in Android's status bar)
- - [x] Compatible with Android
- - [x] Compatible with Windows
- - [x] Compatible with Linux
- - [x] Compatible with MacOS X (not stable, some people have issues, doesn't work with old devices)
- - [x] Compatible with iOS (not stable, some people have issues, doesn't work with old devices)
+ - All the features of the original library.
+ - Compatibility with the [Keyboard](https://www.arduino.cc/reference/en/language/functions/usb/keyboard/) and [Mouse](https://www.arduino.cc/reference/en/language/functions/usb/mouse/) libraries.
+ - Extra keyboard buttons
 
 ## Installation
 - (Make sure you can use the ESP32 with the Arduino IDE. [Instructions can be found here.](https://github.com/espressif/arduino-esp32#installation-instructions))
@@ -31,70 +21,69 @@ You might also be interested in:
 
 ``` C++
 /**
- * This example turns the ESP32 into a Bluetooth LE keyboard that writes the words, presses Enter, presses a media key and then Ctrl+Alt+Delete
+ * This example turns the ESP32 into a Bluetooth LE keyboard that writes the words, presses Enter, presses a media key and then Ctrl+Alt+Delete. In the end showcase the mouse functions.
  */
-#include <BleCombo.h>
-
-BleCombo bleCombo;
+#include <Keyboard.h>
+#include <Mouse.h>
 
 void setup() {
   Serial.begin(115200);
   Serial.println("Starting BLE work!");
-  bleCombo.begin();
+  Keyboard.begin();
 }
 
 void loop() {
   if(BleCombo.isConnected()) {
     Serial.println("Sending 'Hello world'...");
-    bleCombo.print("Hello world");
+    Keyboard.print("Hello world");
 
     delay(1000);
 
     Serial.println("Sending Enter key...");
-    bleCombo.write(KEY_RETURN);
+    Keyboard.write(KEY_RETURN);
 
     delay(1000);
 
     Serial.println("Sending Play/Pause media key...");
-    bleCombo.write(KEY_MEDIA_PLAY_PAUSE);
+    Keyboard.write(KEY_MEDIA_PLAY_PAUSE);
 
     delay(1000);
 
     Serial.println("Sending Ctrl+Alt+Delete...");
-    bleCombo.press(KEY_LEFT_CTRL);
-    bleCombo.press(KEY_LEFT_ALT);
-    bleCombo.press(KEY_DELETE);
+    Keyboard.press(KEY_LEFT_CTRL);
+    Keyboard.press(KEY_LEFT_ALT);
+    Keyboard.press(KEY_DELETE);
     delay(100);
-    bleCombo.releaseAll();
+    Keyboard.releaseAll();
 
     delay(1000);
 
     Serial.println("Left click");
-    bleCombo.click(MOUSE_LEFT);
+    Mouse.click(MOUSE_LEFT);
     delay(500);
 
     Serial.println("Right click");
-    bleCombo.click(MOUSE_RIGHT);
+    Mouse.click(MOUSE_RIGHT);
     delay(500);
 
     Serial.println("Scroll wheel click");
-    bleCombo.click(MOUSE_MIDDLE);
+    Mouse.click(MOUSE_MIDDLE);
     delay(500);
 
     Serial.println("Back button click");
-    bleCombo.click(MOUSE_BACK);
+    Mouse.click(MOUSE_BACK);
     delay(500);
 
     Serial.println("Forward button click");
-    bleCombo.click(MOUSE_FORWARD);
+    Mouse.click(MOUSE_FORWARD);
     delay(500);
 
     Serial.println("Click left+right mouse button at the same time");
-    bleCombo.click(MOUSE_LEFT | MOUSE_RIGHT);
+    Mouse.click(MOUSE_LEFT | MOUSE_RIGHT);
     delay(500);
 
     Serial.println("Click left+right mouse button and scroll wheel at the same time");
-    bleCombo.click(MOUSE_LEFT | MOUSE_RIGHT | MOUSE_MIDDLE);
+    Mouse.click(MOUSE_LEFT | MOUSE_RIGHT | MOUSE_MIDDLE);
     delay(500);
 
   }
@@ -104,16 +93,6 @@ void loop() {
 ```
 
 ## API docs
-The BleCombo interface is almost identical to the Arduino Keyboard and Mouse Interface, so you can use documentation right here:
-https://www.arduino.cc/reference/en/language/functions/usb/keyboard/
-https://www.arduino.cc/reference/en/language/functions/usb/mouse/
-
-Just remember that you have to use `bleCombo` instead of just `Keyboard` or `Mouse` and you need these two lines at the top of your script:
-```
-#include <BleCombo.h>
-BleCombo bleCombo;
-```
-
 In addition to that you can send media keys (which is not possible with the USB keyboard library). Supported are the following:
 - KEY_MEDIA_NEXT_TRACK
 - KEY_MEDIA_PREVIOUS_TRACK
@@ -132,12 +111,15 @@ In addition to that you can send media keys (which is not possible with the USB 
 - KEY_MEDIA_CONSUMER_CONTROL_CONFIGURATION // Media Selection
 - KEY_MEDIA_EMAIL_READER
 
-There is also Bluetooth specific information that you can set (optional):
-Instead of `BleCombo bleCombo;` you can do `BleCombo bleCombo("Bluetooth Device Name", "Bluetooth Device Manufacturer", 100);`. (Max lenght is 15 characters, anything beyond that will be truncated.)  
-The third parameter is the initial battery level of your device. To adjust the battery level later on you can simply call e.g.  `bleCombo.setBatteryLevel(50)` (set battery level to 50%).  
-By default the battery level will be set to 100%, the device name will be `ESP32 Combo HID` and the manufacturer will be `Espressif`.  
-There is also a `setDelay` method to set a delay between each key event. E.g. `bleCombo.setDelay(10)` (10 milliseconds). The default is `8`.  
-This feature is meant to compensate for some applications and devices that can't handle fast input and will skip letters if too many keys are sent in a small time frame.  
+### Bluetooth device settings
+In order to change Bluetooth information you need to use the bleDevice object. You can ether the values of the default constructor on BleCombo.h or you can use the setter functions.
+  
+``` C++
+BleCombo.setDeviceName("My ESP32"); //call before any of the begin functions to change the device name.
+BleCombo.setBatteryLevel(80); //change the battery level to 80%
+BleCombo.setDelay(100); //change the delay between each key event
+BleCombo.isConnected(); //returns true if the device is connected to a host
+```
 
 ## NimBLE-Mode
 The NimBLE mode enables a significant saving of RAM and FLASH memory.
