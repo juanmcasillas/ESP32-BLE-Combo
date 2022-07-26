@@ -1,9 +1,7 @@
 /**
  * This example turns the ESP32 into a Bluetooth LE mouse that continuously moves the mouse.
  */
-#include <Mouse.h>
-
-BleCombo bleCombo;
+#include <BleMouse.h>
 
 void setup() {
   Serial.begin(115200);
@@ -12,7 +10,7 @@ void setup() {
 }
 
 void loop() {
-  if(bleCombo.isConnected()) {
+  if(bleDevice.isConnected()) {
     Serial.println("Left click");
     Mouse.click(MOUSE_LEFT);
     delay(500);

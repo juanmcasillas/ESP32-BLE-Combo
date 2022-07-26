@@ -21,10 +21,12 @@ This library is a wrapper of the above fork in order to make it compatible with 
 
 ``` C++
 /**
- * This example turns the ESP32 into a Bluetooth LE keyboard that writes the words, presses Enter, presses a media key and then Ctrl+Alt+Delete. In the end showcase the mouse functions.
+ * This example turns the ESP32 into a Bluetooth LE keyboard & mouse.
+ * Writes the words, presses Enter, presses a media key and then Ctrl+Alt+Delete.
+ * In the end showcase the mouse functions.
  */
-#include <Keyboard.h>
-#include <Mouse.h>
+#include <BleKeyboard.h>
+#include <BleMouse.h>
 
 void setup() {
   Serial.begin(115200);
@@ -33,7 +35,7 @@ void setup() {
 }
 
 void loop() {
-  if(BleCombo.isConnected()) {
+  if(bleDevice.isConnected()) {
     Serial.println("Sending 'Hello world'...");
     Keyboard.print("Hello world");
 
@@ -115,10 +117,10 @@ In addition to that you can send media keys (which is not possible with the USB 
 In order to change Bluetooth information you need to use the bleDevice object. You can ether the values of the default constructor on BleCombo.h or you can use the setter functions.
   
 ``` C++
-BleCombo.setDeviceName("My ESP32"); //call before any of the begin functions to change the device name.
-BleCombo.setBatteryLevel(80); //change the battery level to 80%
-BleCombo.setDelay(100); //change the delay between each key event
-BleCombo.isConnected(); //returns true if the device is connected to a host
+bleDevice.setDeviceName("My ESP32"); //call before any of the begin functions to change the device name.
+bleDevice.setBatteryLevel(80); //change the battery level to 80%
+bleDevice.setDelay(100); //change the delay between each key event
+bleDevice.isConnected(); //returns true if the device is connected to a host
 ```
 
 ## NimBLE-Mode
@@ -151,7 +153,8 @@ Flash: [====      ]  44.2% (used 579158 bytes from 1310720 bytes)
 ArduinoIDE: Before including the library, insert the line `#define USE_NIMBLE`
 ```C++
 #define USE_NIMBLE
-#include <BleCombo.h>
+#include <BleKeyboard.h>
+#include <BleMouse.h>
 ```
 
 PlatformIO: Change your `platformio.ini` to the following settings

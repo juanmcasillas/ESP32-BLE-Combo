@@ -1,4 +1,4 @@
-#include "Mouse.h"
+#include "BleMouse.h"
 Mouse_ Mouse;
 
 void Mouse_::begin()
