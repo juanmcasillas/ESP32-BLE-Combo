@@ -1,37 +1,46 @@
-# ESP32 BLE Keyboard & Mouse Combo library
+# ESP32 BLE Keyboard, Mouse and Gamepad (Joystick) Combo library
 
-This is a fork of the original [ESP32 BLE HID Combo library](https://github.com/peter-pakanun/ESP32-BLE-Combo)
+This is a fork of the forked [ESP32 BLE Mouse & Keyboard Combo](https://github.com/Georgegipa/ESP32-BLE-Combo) that
+is a fork of the original [ESP32 BLE HID Combo library](https://github.com/peter-pakanun/ESP32-BLE-Combo)
 which is based on the [BLE-Keyboard](https://github.com/T-vK/ESP32-BLE-Keyboard).
 
-This library is a wrapper of the above fork in order to make it compatible with the [Keyboard](https://www.arduino.cc/reference/en/language/functions/usb/keyboard/) and [Mouse](https://www.arduino.cc/reference/en/language/functions/usb/mouse/).
+This library is a wrapper of the above fork in order to make it compatible with the [Keyboard](https://www.arduino.cc/reference/en/language/functions/usb/keyboard/) [Mouse](https://www.arduino.cc/reference/en/language/functions/usb/mouse/) and
+[Gamepad](https://www.arduino.cc/reference/en/libraries/joystick/) (note that a gamepad is kind of joystick).
 
 ## Features
 
  - All the features of the original library.
- - Compatibility with the [Keyboard](https://www.arduino.cc/reference/en/language/functions/usb/keyboard/) and [Mouse](https://www.arduino.cc/reference/en/language/functions/usb/mouse/) libraries.
+ - Compatibility with the [Keyboard](https://www.arduino.cc/reference/en/language/functions/usb/keyboard/), [Mouse](https://www.arduino.cc/reference/en/language/functions/usb/mouse/) libraries.
  - Extra keyboard buttons
+ - Compatibility with the [Gamepad](https://www.arduino.cc/reference/en/libraries/joystick/) (aka joystick)
+ - The Gamepad device supports:
+    * 4 axis x 3 = 12 axis (only 8 axis supported for Xinput).
+    * 128 buttons.
+    * Pov Hats.
 
 ## Installation
 - (Make sure you can use the ESP32 with the Arduino IDE. [Instructions can be found here.](https://github.com/espressif/arduino-esp32#installation-instructions))
 - [Download the latest release of this library from the release page.](https://github.com/Georgegipa/ESP32-BLE-Combo/releases)
 - In the Arduino IDE go to "Sketch" -> "Include Library" -> "Add .ZIP Library..." and select the file you just downloaded.
 - You can now go to "File" -> "Examples" -> "ESP32 BLE Keyboard" and select any of the examples to get started.
+- Added a `Mouse::wheel()` method to only move the wheels :-D
 
 ## Example
 
 ``` C++
 /**
- * This example turns the ESP32 into a Bluetooth LE keyboard & mouse.
- * Writes the words, presses Enter, presses a media key and then Ctrl+Alt+Delete.
- * In the end showcase the mouse functions.
+ * This example turns the ESP32 into a Bluetooth LE keyboard that writes the words, presses Enter, presses a media key and then Ctrl+Alt+Delete
  */
 #include <BleKeyboard.h>
 #include <BleMouse.h>
+#include <BleGamepad.h>
 
 void setup() {
   Serial.begin(115200);
   Serial.println("Starting BLE work!");
   Keyboard.begin();
+  Mouse.begin();
+  Gamepad.begin();
 }
 
 void loop() {
@@ -50,15 +59,9 @@ void loop() {
     Keyboard.write(KEY_MEDIA_PLAY_PAUSE);
 
     delay(1000);
-
-    Serial.println("Sending Ctrl+Alt+Delete...");
-    Keyboard.press(KEY_LEFT_CTRL);
-    Keyboard.press(KEY_LEFT_ALT);
-    Keyboard.press(KEY_DELETE);
-    delay(100);
-    Keyboard.releaseAll();
-
-    delay(1000);
+  
+    Serial.println("Waiting 5 seconds...");
+    delay(5000);
 
     Serial.println("Left click");
     Mouse.click(MOUSE_LEFT);
@@ -86,11 +89,21 @@ void loop() {
 
     Serial.println("Click left+right mouse button and scroll wheel at the same time");
     Mouse.click(MOUSE_LEFT | MOUSE_RIGHT | MOUSE_MIDDLE);
+    delay(500);  
+
+    Serial.println("Waiting 5 seconds...");
+    delay(5000);
+
+    // GAMEPAD SUPPORT!
+    Serial.println("Sending some buttons");
+    Gamepad.press(12);
+    delay(500);
+    Gamepad.press(10);
+    delay(500);
+    Gamepad.setAxes(0, 0, 512, 512, 512, 512, 0, 0, 0, 0,0,0);
     delay(500);
 
   }
-  Serial.println("Waiting 5 seconds...");
-  delay(5000);
 }
 ```
 
@@ -168,6 +181,7 @@ build_flags =
 
 ## Credits
 
-Credits to [chegewara](https://github.com/chegewara) and [the authors of the USB keyboard library](https://github.com/arduino-libraries/Keyboard/) as this project is heavily based on their work!  
-Also, credits to [duke2421](https://github.com/T-vK/ESP32-BLE-Keyboard/issues/1) who helped a lot with testing, debugging and fixing the device descriptor!
-And credits to [sivar2311](https://github.com/sivar2311) for adding NimBLE support, greatly reducing the memory footprint, fixing advertising issues and for adding the `setDelay` method.
+- Credits to [Georgegipa](https://github.com/Georgegipa/ESP32-BLE-Combo) to get the things working and give me the idea.
+- Credits to [chegewara](https://github.com/chegewara) and [the authors of the USB keyboard library](https://github.com/arduino-libraries/Keyboard/) as this project is heavily based on their work!  
+- Credits to [duke2421](https://github.com/T-vK/ESP32-BLE-Keyboard/issues/1) who helped a lot with testing, debugging and fixing the device descriptor!
+- Credits to [sivar2311](https://github.com/sivar2311) for adding NimBLE support, greatly reducing the memory footprint, fixing advertising issues and for adding the `setDelay` method.

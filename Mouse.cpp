@@ -21,6 +21,11 @@ void Mouse_::move(int x, int y, signed char wheel, signed char hwheel)
     bleDevice.move(x, y, wheel, hwheel);
 }
 
+void Mouse_::wheel(signed char wheel, signed char hwheel)
+{
+    bleDevice.wheel(wheel, hwheel);
+}
+
 void Mouse_::press(uint16_t b)
 {
     bleDevice.pressMouse(b);

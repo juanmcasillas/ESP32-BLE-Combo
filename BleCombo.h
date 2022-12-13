@@ -58,20 +58,26 @@ typedef struct
 
 class Mouse_;
 class Keyboard_;
+class Gamepad_;
 
 class BleCombo : public Print, public BLEServerCallbacks, public BLECharacteristicCallbacks
 {
   friend class Mouse_;
   friend class Keyboard_;
+  friend class Gamepad_;
 
 private:
   uint8_t _buttons;
+  uint8_t _buttonsGamepad[16]; // 2x64 -> 128 bytes) [0: 0-64, 1->64-128]
   BLEHIDDevice *hid;
   BLECharacteristic *inputKeyboard;
   BLECharacteristic *outputKeyboard;
   BLECharacteristic *inputMediaKeys;
   BLECharacteristic *inputMouse;
   BLECharacteristic *outputMouse;
+  BLECharacteristic *inputGamepad;
+  BLECharacteristic *outputGamepad;
+
   BLEAdvertising *advertising;
   KeyReport _keyReport;
   MediaKeyReport _mediaKeyReport;
@@ -90,7 +96,7 @@ private:
   static bool isInitialized;
 
 public:
-  BleCombo(std::string deviceName = "ESP32 Combo HID", std::string deviceManufacturer = "Espressif", uint8_t batteryLevel = 100);
+  BleCombo(std::string deviceName = "BL-Combo (KMG)", std::string deviceManufacturer = "JMCResearch.com", uint8_t batteryLevel = 100);
   void setBatteryLevel(uint8_t level);
   void setName(std::string deviceName);
   void setDelay(uint32_t ms);
@@ -112,8 +118,16 @@ protected:
   size_t write(const uint8_t *buffer, size_t size);
   void releaseAll(void);
 
+  // keypad magic
+  void resetButtons();
+  void setAxes(int16_t x, int16_t y, int16_t a1, int16_t a2, int16_t a3, int16_t a4, int16_t a5, int16_t a6, signed char hat1, signed char hat2, signed char hat3, signed char hat4);
+  size_t pressButton(uint8_t b);
+  size_t releaseButton(uint8_t b);
+  bool isPressedButton(uint8_t b);
+
   void click(const uint16_t b);
   void move(signed char x, signed char y, signed char wheel = 0, signed char hWheel = 0);
+  void wheel(signed char wheel = 0, signed char hWheel = 0);
   bool isPressed(const uint16_t b);
 
   void set_vendor_id(uint16_t vid);

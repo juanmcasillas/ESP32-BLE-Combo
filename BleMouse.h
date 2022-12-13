@@ -15,6 +15,7 @@ public:
     void end(void);
     void click(uint16_t b = MOUSE_LEFT);
     void move(int x, int y, signed char wheel = 0, signed char hwheel = 0);
+    void wheel(signed char wheel = 0, signed char hwheel = 0);
     void press(uint16_t b = MOUSE_LEFT);
     void release(uint16_t b = MOUSE_LEFT);
     void releaseAll(void);
