@@ -7,6 +7,7 @@ which is based on the [BLE-Keyboard](https://github.com/T-vK/ESP32-BLE-Keyboard)
 This library is a wrapper of the above fork in order to make it compatible with the [Keyboard](https://www.arduino.cc/reference/en/language/functions/usb/keyboard/) [Mouse](https://www.arduino.cc/reference/en/language/functions/usb/mouse/) and
 [Gamepad](https://www.arduino.cc/reference/en/libraries/joystick/) (note that a gamepad is kind of joystick).
 
+See [BLButtons](https://github.com/juanmcasillas/BLButtons) as a working example of the library.
 ## Features
 
  - All the features of the original library.
